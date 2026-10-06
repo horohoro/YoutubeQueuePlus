@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "YoutubeQueuePlus",
+  "version": "1.0.0",
+  "description": "Augments YouTube's native temporary queue with persistence, duplicate prevention, and feed badging.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service_worker.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    },
+    "default_title": "YoutubeQueuePlus"
+  },
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "css": [
+        "src/styles/queue_plus.css"
+      ],
+      "js": [
+        "src/shared/constants.js",
+        "src/shared/storage_keys.js",
+        "src/utils/dom_helpers.js",
+        "src/utils/url_parser.js",
+        "src/modules/storage_sync.js",
+        "src/modules/toast_manager.js",
+        "src/modules/duplicate_guard.js",
+        "src/modules/feed_decorator.js",
+        "src/modules/queue_observer.js",
+        "src/modules/restore_controller.js",
+        "src/content_main.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

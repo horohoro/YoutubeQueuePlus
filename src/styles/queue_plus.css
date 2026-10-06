@@ -1,0 +1,387 @@
+/* ==========================================================================
+   YoutubeQueuePlus - High-Fidelity Stylesheet
+   Covers:
+   1. Feed Card Badging (.yqp-queue-badge chip & SVG icon)
+   2. Feed Card Dimming (badge_and_dim mode & hover restoration)
+   3. Feed Card Hiding (hide mode)
+   4. Feed Card Badge-Only (badge_only mode)
+   5. Duplicate Interception Toast Snackbar (#yqp-toast / .yqp-toast-container)
+   6. Native Queue Session Restoration Banner (.yqp-restore-banner)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Feed Card Badging (.yqp-queue-badge)
+   -------------------------------------------------------------------------- */
+.yqp-queue-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 15, 15, 0.88);
+  color: #3ea6ff;
+  border: 1px solid rgba(62, 166, 255, 0.45);
+  font-family: "YouTube Sans", "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none !important; /* Critical: allows underlying clicks to pass through */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Integrated SVG Queue Icon via pseudo-element */
+.yqp-queue-badge::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233ea6ff'%3E%3Cpath d='M21 16H3v-2h18v2zm0-5H3V9h18v2zm0-5H3V4h18v2z'/%3E%3C/svg%3E");
+  flex-shrink: 0;
+}
+
+/* Fallback SVG child styling if SVG is injected directly into DOM */
+.yqp-queue-badge svg {
+  width: 11px;
+  height: 11px;
+  fill: #3ea6ff;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. Feed Card Dimming (badge_and_dim mode)
+   Targets ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer
+   -------------------------------------------------------------------------- */
+ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
+ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
+ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
+[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"] {
+  opacity: 0.40;
+  filter: grayscale(35%);
+  transition: opacity 0.25s cubic-bezier(0.2, 0, 0, 1), filter 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Usability Hover Restore: returns card to full color and high opacity on mouseover */
+ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
+ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
+ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
+[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover {
+  opacity: 0.95 !important;
+  filter: grayscale(0%);
+}
+
+/* --------------------------------------------------------------------------
+   3. Feed Card Hiding (hide mode)
+   -------------------------------------------------------------------------- */
+ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
+ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
+ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
+[data-yqp-status="queued"][data-yqp-mode="hide"] {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. Feed Card Badge-Only (badge_only mode)
+   -------------------------------------------------------------------------- */
+ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"],
+ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"],
+ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"],
+[data-yqp-status="queued"][data-yqp-mode="badge_only"] {
+  opacity: 1;
+  filter: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Duplicate Interception Toast Snackbar (#yqp-toast / .yqp-toast-container)
+   Matches YouTube native Material snackbar
+   -------------------------------------------------------------------------- */
+.yqp-toast-container,
+#yqp-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(33, 33, 33, 0.96);
+  color: #f1f1f1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.12);
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.0, 0.0, 0.2, 1), transform 0.25s cubic-bezier(0.0, 0.0, 0.2, 1);
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  max-width: 440px;
+}
+
+.yqp-toast-container.yqp-toast-visible,
+#yqp-toast.yqp-toast-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Subtle pulse feedback on duplicate click timer refresh */
+.yqp-toast-container.yqp-toast-pulse,
+#yqp-toast.yqp-toast-pulse {
+  animation: yqp-toast-pulse-anim 0.25s ease-out;
+}
+
+@keyframes yqp-toast-pulse-anim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.yqp-toast-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.yqp-toast-icon {
+  width: 20px;
+  height: 20px;
+  fill: #3ea6ff;
+  flex-shrink: 0;
+}
+
+.yqp-toast-message {
+  color: #f1f1f1;
+  font-size: 14px;
+  line-height: 20px;
+  flex: 1;
+  word-break: break-word;
+}
+
+.yqp-toast-action-btn {
+  background: transparent;
+  color: #3ea6ff;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+  border-radius: 4px;
+  outline: none;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.yqp-toast-action-btn:hover {
+  background-color: rgba(62, 166, 255, 0.15);
+  color: #65b8ff;
+}
+
+.yqp-toast-action-btn:active {
+  background-color: rgba(62, 166, 255, 0.28);
+}
+
+.yqp-toast-action-btn:focus-visible {
+  outline: 2px solid #3ea6ff;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Native Queue Session Restoration Banner (.yqp-restore-banner)
+   Unobtrusive floating banner at top of feed
+   -------------------------------------------------------------------------- */
+.yqp-restore-banner,
+#yqp-restore-banner {
+  margin: 16px 24px 8px 24px;
+  padding: 12px 20px;
+  background: rgba(33, 33, 33, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+  z-index: 100;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  animation: yqp-banner-fadein 0.25s cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+@keyframes yqp-banner-fadein {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.yqp-restore-banner-text {
+  color: #f1f1f1;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.yqp-restore-banner-text::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233ea6ff'%3E%3Cpath d='M21 16H3v-2h18v2zm0-5H3V9h18v2zm0-5H3V4h18v2z'/%3E%3C/svg%3E");
+  flex-shrink: 0;
+}
+
+.yqp-banner-title {
+  color: #f1f1f1;
+  font-weight: 500;
+}
+
+.yqp-banner-timestamp {
+  color: #aaaaaa;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.yqp-restore-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.yqp-banner-btn-restore {
+  background: #3ea6ff;
+  color: #0f0f0f;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.yqp-banner-btn-restore:hover {
+  background: #65b8ff;
+  transform: translateY(-1px);
+}
+
+.yqp-banner-btn-restore:active {
+  background: #2a8ee0;
+  transform: translateY(0);
+}
+
+.yqp-banner-btn-restore:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.yqp-banner-btn-dismiss {
+  background: transparent;
+  color: #aaaaaa;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 18px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.yqp-banner-btn-dismiss:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.yqp-banner-btn-dismiss:focus-visible {
+  outline: 2px solid #aaaaaa;
+  outline-offset: 2px;
+}
+
+/* Light Mode Adaptability */
+html:not([dark]) .yqp-restore-banner,
+html:not([dark]) #yqp-restore-banner {
+  background: rgba(248, 248, 248, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+html:not([dark]) .yqp-banner-title {
+  color: #0f0f0f;
+}
+
+html:not([dark]) .yqp-banner-timestamp {
+  color: #606060;
+}
+
+html:not([dark]) .yqp-banner-btn-restore {
+  background: #065fd4;
+  color: #ffffff;
+}
+
+html:not([dark]) .yqp-banner-btn-restore:hover {
+  background: #0056b3;
+}
+
+html:not([dark]) .yqp-banner-btn-dismiss {
+  color: #606060;
+}
+
+html:not([dark]) .yqp-banner-btn-dismiss:hover {
+  color: #0f0f0f;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Narrow Screen Responsiveness */
+@media (max-width: 600px) {
+  .yqp-restore-banner,
+  #yqp-restore-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 8px 12px;
+    padding: 10px 14px;
+  }
+
+  .yqp-restore-banner-actions {
+    align-self: flex-end;
+  }
+}

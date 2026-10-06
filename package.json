@@ -1,0 +1,15 @@
+{
+  "name": "youtube-queue-plus",
+  "version": "1.0.0",
+  "description": "Chrome extension augmenting YouTube native queue",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "youtube",
+    "queue",
+    "chrome-extension"
+  ],
+  "author": "horohoro",
+  "license": "CC-BY-4.0"
+}

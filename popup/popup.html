@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Queue+</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <img src="../assets/icons/icon-32.png" alt="Queue+ Logo" class="logo">
+      <div class="header-title-wrap">
+        <h1 class="header-title">YouTube Queue<span class="accent">+</span></h1>
+        <span class="header-subtitle">Native Queue Enhancer</span>
+      </div>
+    </div>
+    <span class="version-tag">v1.0</span>
+  </header>
+
+  <main class="content">
+    <!-- Card 1: Live Queue Status -->
+    <section class="card status-card" id="activeQueueCard">
+      <div class="card-header">
+        <div class="card-header-title">
+          <span class="card-icon">▶</span>
+          <h2>Live Queue</h2>
+        </div>
+        <span id="queueLivePill" class="live-pill idle">IDLE</span>
+      </div>
+      <div class="card-body">
+        <div class="stat-highlight">
+          <span id="queueCount" class="stat-number">0 videos</span>
+        </div>
+        <div class="stat-detail-row">
+          <span class="stat-label">Now Playing:</span>
+          <span id="playingIndex" class="stat-value">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card 2: Treatment Mode Selector -->
+    <section class="card mode-card" id="treatmentModeCard">
+      <div class="card-header">
+        <div class="card-header-title">
+          <span class="card-icon">👁</span>
+          <h2>Feed Treatment</h2>
+        </div>
+      </div>
+      <div class="card-body radio-group" role="radiogroup" aria-label="Feed Treatment Mode">
+        <label class="radio-item" for="modeBadgeAndDim">
+          <input type="radio" id="modeBadgeAndDim" name="feedTreatmentMode" value="badge_and_dim" checked>
+          <div class="radio-label">
+            <span class="radio-title">Badge & Dim</span>
+            <span class="radio-desc">Badge thumbnail & dim card opacity (default)</span>
+          </div>
+        </label>
+        <label class="radio-item" for="modeHide">
+          <input type="radio" id="modeHide" name="feedTreatmentMode" value="hide">
+          <div class="radio-label">
+            <span class="radio-title">Hide Completely</span>
+            <span class="radio-desc">Completely hide queued videos from feeds</span>
+          </div>
+        </label>
+        <label class="radio-item" for="modeBadgeOnly">
+          <input type="radio" id="modeBadgeOnly" name="feedTreatmentMode" value="badge_only">
+          <div class="radio-label">
+            <span class="radio-title">Badge Only</span>
+            <span class="radio-desc">Badge thumbnail without dimming cards</span>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <!-- Card 3: Saved Session Card -->
+    <section class="card session-card" id="savedSessionCard">
+      <div class="card-header">
+        <div class="card-header-title">
+          <span class="card-icon">💾</span>
+          <h2>Saved Session</h2>
+        </div>
+        <span id="sessionStatusPill" class="status-pill none">NONE</span>
+      </div>
+      <div class="card-body">
+        <div class="session-info-grid">
+          <div class="stat-detail-row">
+            <span class="stat-label">Saved Queue:</span>
+            <span id="savedCount" class="stat-value">None</span>
+          </div>
+          <div class="stat-detail-row">
+            <span class="stat-label">Last Saved:</span>
+            <span id="savedTime" class="stat-value">—</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="restoreBtn" class="btn btn-primary" disabled>
+            <span class="btn-icon">↺</span> Restore Saved Queue
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="footer-text">YoutubeQueuePlus • Pure Vanilla JS</span>
+  </footer>
+
+  <script src="../src/utils/url_parser.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
