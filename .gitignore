@@ -32,3 +32,4 @@ yarn-error.log*
 .agent/
 _agents/
 _agent/
+*.zip
