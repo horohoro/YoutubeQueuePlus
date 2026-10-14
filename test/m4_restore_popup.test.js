@@ -1099,6 +1099,59 @@ describe('Milestone M4: Session Restore Controller & Popup UI', () => {
       assert.equal(controller._isDestroyed, true);
     });
 
+    test('1.13: Watch page & primary column target resolution: mounts #yqp-restore-banner cleanly inside #primary', async () => {
+      const doc = new MockDocument();
+      const masthead = doc.createElement('div');
+      masthead.id = 'masthead-container';
+      doc.body.appendChild(masthead);
+
+      const pageManager = doc.createElement('ytd-page-manager');
+      pageManager.id = 'page-manager';
+      doc.body.appendChild(pageManager);
+
+      const watchFlexy = doc.createElement('ytd-watch-flexy');
+      pageManager.appendChild(watchFlexy);
+
+      const primary = doc.createElement('div');
+      primary.id = 'primary';
+      watchFlexy.appendChild(primary);
+
+      const player = doc.createElement('div');
+      player.id = 'player';
+      primary.appendChild(player);
+
+      const win = new MockWindow(doc);
+      const mockStorage = new MockChromeStorageArea();
+      const storageSync = new StorageSync({ storageArea: mockStorage, debounceDelay: 0 });
+
+      await mockStorage.set({
+        [StorageKeys.STORAGE_KEYS.ACTIVE_QUEUE]: { videoIds: [], count: 0 },
+        [StorageKeys.STORAGE_KEYS.SAVED_SESSION]: {
+          videoIds: ['dQw4w9WgXcQ', 'jNQXAC9IVRw'],
+          currentIndex: 0,
+          savedAt: Date.now() - 3600000
+        }
+      });
+
+      const controller = new RestoreController({
+        document: doc,
+        window: win,
+        storageSync,
+        autoStart: false
+      });
+
+      const shown = await controller.checkAndShowBanner();
+      assert.equal(shown, true);
+      assert.equal(controller.isBannerVisible(), true);
+
+      const banner = doc.getElementById('yqp-restore-banner');
+      assert.ok(banner, 'Banner must exist in DOM');
+      assert.equal(banner.parentNode, primary, 'Banner must be mounted inside #primary on watch pages');
+      assert.equal(primary.firstChild, banner, 'Banner must be mounted before player in #primary');
+
+      controller.destroy();
+    });
+
   });
 
   // ---------------------------------------------------------------------------

@@ -43,7 +43,8 @@
 
     // Restore Banner Injection Targets
     BANNER_PARENT_HOME: 'ytd-rich-grid-renderer #contents, #contents.ytd-rich-grid-renderer',
-    BANNER_PARENT_PRIMARY: '#primary #contents, ytd-browse[page-subtype="home"] #contents',
+    BANNER_PARENT_WATCH: 'ytd-watch-flexy #primary, #primary',
+    BANNER_PARENT_PRIMARY: 'ytd-watch-flexy #primary, #primary #contents, ytd-browse[page-subtype="home"] #contents, #primary',
     MASTHEAD_CONTAINER: '#masthead-container, ytd-masthead'
   });
 

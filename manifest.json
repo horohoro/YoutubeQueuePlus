@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YoutubeQueuePlus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Augments YouTube's native temporary queue with persistence, duplicate prevention, and feed badging.",
   "permissions": [
     "storage"

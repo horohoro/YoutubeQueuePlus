@@ -41,7 +41,8 @@
   const Constants = ConstantsModule || (typeof globalThis !== 'undefined' && globalThis.__YQP__?.Constants) || {
     SELECTORS: {
       BANNER_PARENT_HOME: 'ytd-rich-grid-renderer #contents, #contents.ytd-rich-grid-renderer',
-      BANNER_PARENT_PRIMARY: '#primary #contents, ytd-browse[page-subtype="home"] #contents',
+      BANNER_PARENT_WATCH: 'ytd-watch-flexy #primary, #primary',
+      BANNER_PARENT_PRIMARY: 'ytd-watch-flexy #primary, #primary #contents, ytd-browse[page-subtype="home"] #contents, #primary',
       MASTHEAD_CONTAINER: '#masthead-container, ytd-masthead'
     },
     CLASSES: {
@@ -412,22 +413,22 @@
         return { parent: homeContents, before: homeContents.firstChild };
       }
 
-      // Priority 2: Primary Browse Contents
+      // Priority 2: Primary Content Column (Watch page, Browse, Search)
       const primaryContents = this.domHelpers.safeQuery(this.constants.SELECTORS?.BANNER_PARENT_PRIMARY, doc);
       if (primaryContents) {
         return { parent: primaryContents, before: primaryContents.firstChild };
       }
 
-      // Priority 3: Below Masthead Container
-      const masthead = this.domHelpers.safeQuery(this.constants.SELECTORS?.MASTHEAD_CONTAINER, doc);
-      if (masthead && masthead.parentNode) {
-        return { parent: masthead.parentNode, before: masthead.nextSibling };
-      }
-
-      // Priority 4: Page Manager
+      // Priority 3: Page Manager
       const pageManager = this.domHelpers.safeQuery('#page-manager, ytd-page-manager', doc);
       if (pageManager) {
         return { parent: pageManager, before: pageManager.firstChild };
+      }
+
+      // Priority 4: Below Masthead Container Fallback
+      const masthead = this.domHelpers.safeQuery(this.constants.SELECTORS?.MASTHEAD_CONTAINER, doc);
+      if (masthead && masthead.parentNode) {
+        return { parent: masthead.parentNode, before: masthead.nextSibling };
       }
 
       // Priority 5: Body Fallback

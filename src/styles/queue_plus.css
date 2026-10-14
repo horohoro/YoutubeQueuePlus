@@ -215,6 +215,8 @@ ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"]
    -------------------------------------------------------------------------- */
 .yqp-restore-banner,
 #yqp-restore-banner {
+  position: relative;
+  z-index: 2050;
   margin: 16px 24px 8px 24px;
   padding: 12px 20px;
   background: rgba(33, 33, 33, 0.96);
@@ -225,12 +227,25 @@ ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"]
   justify-content: space-between;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
   font-family: "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
-  z-index: 100;
   box-sizing: border-box;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: opacity 0.25s ease, transform 0.25s ease;
   animation: yqp-banner-fadein 0.25s cubic-bezier(0.0, 0.0, 0.2, 1);
+  pointer-events: auto;
+}
+
+/* Primary column & watch page integration */
+#primary > #yqp-restore-banner,
+ytd-watch-flexy #primary > #yqp-restore-banner {
+  margin: 12px 0 16px 0;
+}
+
+/* Fallback protection: when mounted as direct child of #content, ytd-app, or body */
+#content > #yqp-restore-banner,
+ytd-app > #yqp-restore-banner,
+body > #yqp-restore-banner {
+  margin: calc(var(--ytd-masthead-height, 56px) + 16px) 24px 16px 24px !important;
 }
 
 @keyframes yqp-banner-fadein {
