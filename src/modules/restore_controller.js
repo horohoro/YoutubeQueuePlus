@@ -419,16 +419,16 @@
         return { parent: primaryContents, before: primaryContents.firstChild };
       }
 
-      // Priority 3: Page Manager
-      const pageManager = this.domHelpers.safeQuery('#page-manager, ytd-page-manager', doc);
-      if (pageManager) {
-        return { parent: pageManager, before: pageManager.firstChild };
-      }
-
-      // Priority 4: Below Masthead Container Fallback
+      // Priority 3: Below Masthead Container Fallback
       const masthead = this.domHelpers.safeQuery(this.constants.SELECTORS?.MASTHEAD_CONTAINER, doc);
       if (masthead && masthead.parentNode) {
         return { parent: masthead.parentNode, before: masthead.nextSibling };
+      }
+
+      // Priority 4: App / Content Container Fallback
+      const contentContainer = this.domHelpers.safeQuery('#content, ytd-app', doc);
+      if (contentContainer) {
+        return { parent: contentContainer, before: contentContainer.firstChild };
       }
 
       // Priority 5: Body Fallback

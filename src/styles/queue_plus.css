@@ -211,51 +211,45 @@ ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"]
 
 /* --------------------------------------------------------------------------
    6. Native Queue Session Restoration Banner (.yqp-restore-banner)
-   Unobtrusive floating banner at top of feed
+   Unobtrusive floating banner pinned below YouTube's top masthead
    -------------------------------------------------------------------------- */
 .yqp-restore-banner,
 #yqp-restore-banner {
-  position: relative;
-  z-index: 2050;
-  margin: 16px 24px 8px 24px;
-  padding: 12px 20px;
+  position: fixed !important;
+  top: calc(var(--ytd-masthead-height, 56px) + 12px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(860px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 10px 18px !important;
   background: rgba(33, 33, 33, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.2);
   font-family: "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
-  box-sizing: border-box;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: opacity 0.25s ease, transform 0.25s ease;
   animation: yqp-banner-fadein 0.25s cubic-bezier(0.0, 0.0, 0.2, 1);
   pointer-events: auto;
-}
-
-/* Primary column & watch page integration */
-#primary > #yqp-restore-banner,
-ytd-watch-flexy #primary > #yqp-restore-banner {
-  margin: 12px 0 16px 0;
-}
-
-/* Fallback protection: when mounted as direct child of #content, ytd-app, or body */
-#content > #yqp-restore-banner,
-ytd-app > #yqp-restore-banner,
-body > #yqp-restore-banner {
-  margin: calc(var(--ytd-masthead-height, 56px) + 16px) 24px 16px 24px !important;
+  z-index: 2050 !important;
 }
 
 @keyframes yqp-banner-fadein {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translate(-50%, -8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
   }
 }
 
