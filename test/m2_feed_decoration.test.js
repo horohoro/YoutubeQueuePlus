@@ -1016,4 +1016,43 @@ describe('Suite 4: End-to-End Reactive Integration Architecture', () => {
     assert.strictEqual(card.style.display, 'none');
     feedDecorator.destroy();
   });
+
+  test('Test 14: Modern YouTube yt-lockup-view-model feed card recognition, decoration, and clearance', () => {
+    const feedDecorator = new FeedDecorator({ mode: 'badge_and_dim' });
+    feedDecorator.updateQueue(['JrlWxZCTomw']);
+
+    const lockup = document.createElement('yt-lockup-view-model');
+    lockup.className = 'lockup ytLockupViewModelWrapper';
+
+    const thumbVm = document.createElement('yt-thumbnail-view-model');
+    thumbVm.className = 'ytThumbnailViewModelHost';
+
+    const imgLink = document.createElement('a');
+    imgLink.className = 'ytLockupViewModelContentImage';
+    imgLink.setAttribute('href', '/watch?v=JrlWxZCTomw');
+    thumbVm.appendChild(imgLink);
+    lockup.appendChild(thumbVm);
+
+    const titleLink = document.createElement('a');
+    titleLink.className = 'ytLockupViewModelTitle';
+    titleLink.setAttribute('href', '/watch?v=JrlWxZCTomw');
+    lockup.appendChild(titleLink);
+
+    documentBody.appendChild(lockup);
+
+    feedDecorator.scanAndDecorate();
+
+    assert.strictEqual(lockup.getAttribute('data-yqp-status'), 'queued');
+    assert.strictEqual(lockup.getAttribute('data-yqp-video-id'), 'JrlWxZCTomw');
+    assert.strictEqual(lockup.style.opacity, '0.4');
+    assert.ok(lockup.querySelector('.yqp-queue-badge') !== null);
+
+    // Dynamic un-decorating when queue cleared
+    feedDecorator.updateQueue([]);
+    assert.strictEqual(lockup.getAttribute('data-yqp-status'), null);
+    assert.strictEqual(lockup.style.opacity, '');
+    assert.strictEqual(lockup.querySelector('.yqp-queue-badge'), null);
+
+    feedDecorator.destroy();
+  });
 });

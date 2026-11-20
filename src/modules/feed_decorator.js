@@ -29,8 +29,8 @@
 
   // Fallback defaults in case dependencies are loaded asynchronously
   const SELECTORS = ConstantsModule?.SELECTORS || {
-    FEED_CARDS_ALL: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer',
-    CARD_THUMBNAIL_CONTAINER: '#thumbnail, ytd-thumbnail, .ytd-thumbnail'
+    FEED_CARDS_ALL: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-rich-grid-media',
+    CARD_THUMBNAIL_CONTAINER: '#thumbnail, ytd-thumbnail, .ytd-thumbnail, yt-thumbnail-view-model, .ytLockupViewModelContentImage, .ytThumbnailViewModelHost'
   };
 
   const ATTRIBUTES = ConstantsModule?.ATTRIBUTES || {
@@ -234,7 +234,9 @@
       if (this.activeQueueIds.size === 0) return;
 
       // 2. Query all feed card renderers in the DOM
-      const cards = targetRoot.querySelectorAll(SELECTORS.FEED_CARDS_ALL);
+      const allCards = targetRoot.querySelectorAll(SELECTORS.FEED_CARDS_ALL);
+      // Filter out nested child cards if parent card is also matched
+      const cards = Array.from(allCards).filter(c => !c.parentElement?.closest?.(SELECTORS.FEED_CARDS_ALL));
       for (const card of cards) {
         const videoId = this.getVideoId(card);
         if (videoId && this.activeQueueIds.has(videoId)) {
@@ -253,7 +255,7 @@
       if (!card) return null;
 
       // In recycled elements, check child anchor href first to verify current ID
-      const anchor = card.querySelector?.('a#thumbnail[href], a#video-title-link[href], a#video-title[href], a[href*="v="]');
+      const anchor = card.querySelector?.('a#thumbnail[href], a#video-title-link[href], a#video-title[href], a.ytLockupViewModelContentImage[href], a.ytLockupViewModelTitle[href], a[href*="/watch?v="], a[href*="v="]');
       if (anchor && typeof anchor.getAttribute === 'function') {
         const href = anchor.getAttribute('href');
         const extracted = UrlParser.extractVideoId ? UrlParser.extractVideoId(href) : null;
@@ -263,6 +265,17 @@
           }
           return extracted;
         }
+      }
+
+      // Check content-id in className (common in yt-lockup-view-model)
+      const classStr = card.className || '';
+      const contentIdMatch = typeof classStr === 'string' && classStr.match(/content-id-([a-zA-Z0-9_-]{11})/);
+      if (contentIdMatch && UrlParser.isValidVideoId(contentIdMatch[1])) {
+        const id = contentIdMatch[1];
+        if (card.getAttribute(ATTRIBUTES.VIDEO_ID) !== id) {
+          card.setAttribute(ATTRIBUTES.VIDEO_ID, id);
+        }
+        return id;
       }
 
       // Fallback: check cached data attribute
@@ -306,7 +319,11 @@
                          card.querySelector('#thumbnail') ||
                          card.querySelector('ytd-thumbnail') ||
                          card.querySelector('.ytd-thumbnail') ||
-                         card.querySelector('a#thumbnail');
+                         card.querySelector('a#thumbnail') ||
+                         card.querySelector('yt-thumbnail-view-model') ||
+                         card.querySelector('.ytLockupViewModelContentImage') ||
+                         card.querySelector('.ytThumbnailViewModelHost') ||
+                         card.querySelector('a[href*="/watch?v="]');
       }
 
       const targetParent = thumbContainer || card;

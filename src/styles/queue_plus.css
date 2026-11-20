@@ -53,6 +53,16 @@
   flex-shrink: 0;
 }
 
+/* Ensure thumbnail containers provide positioning context for badge */
+#thumbnail,
+ytd-thumbnail,
+.ytd-thumbnail,
+yt-thumbnail-view-model,
+.ytLockupViewModelContentImage,
+.ytThumbnailViewModelHost {
+  position: relative !important;
+}
+
 /* Fallback SVG child styling if SVG is injected directly into DOM */
 .yqp-queue-badge svg {
   width: 11px;
@@ -63,11 +73,14 @@
 
 /* --------------------------------------------------------------------------
    2. Feed Card Dimming (badge_and_dim mode)
-   Targets ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer
+   Targets ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, yt-lockup-view-model
    -------------------------------------------------------------------------- */
 ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
 ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
 ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
+yt-lockup-view-model[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
+ytd-rich-grid-media[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
+.ytLockupViewModelHost[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"],
 [data-yqp-status="queued"][data-yqp-mode="badge_and_dim"] {
   opacity: 0.40;
   filter: grayscale(35%);
@@ -78,6 +91,9 @@ ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_di
 ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
 ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
 ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
+yt-lockup-view-model[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
+ytd-rich-grid-media[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
+.ytLockupViewModelHost[data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover,
 [data-yqp-status="queued"][data-yqp-mode="badge_and_dim"]:hover {
   opacity: 0.95 !important;
   filter: grayscale(0%);
@@ -89,6 +105,9 @@ ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_and_di
 ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
 ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
 ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
+yt-lockup-view-model[data-yqp-status="queued"][data-yqp-mode="hide"],
+ytd-rich-grid-media[data-yqp-status="queued"][data-yqp-mode="hide"],
+.ytLockupViewModelHost[data-yqp-status="queued"][data-yqp-mode="hide"],
 [data-yqp-status="queued"][data-yqp-mode="hide"] {
   display: none !important;
 }
@@ -99,6 +118,9 @@ ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="hide"],
 ytd-rich-item-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"],
 ytd-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"],
 ytd-compact-video-renderer[data-yqp-status="queued"][data-yqp-mode="badge_only"],
+yt-lockup-view-model[data-yqp-status="queued"][data-yqp-mode="badge_only"],
+ytd-rich-grid-media[data-yqp-status="queued"][data-yqp-mode="badge_only"],
+.ytLockupViewModelHost[data-yqp-status="queued"][data-yqp-mode="badge_only"],
 [data-yqp-status="queued"][data-yqp-mode="badge_only"] {
   opacity: 1;
   filter: none;

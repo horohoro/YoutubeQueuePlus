@@ -45,11 +45,11 @@
   const Constants = ConstantsModule || (typeof globalThis !== 'undefined' && globalThis.__YQP__?.Constants) || {
     SELECTORS: {
       OVERLAY_ADD_TO_QUEUE_BTN: 'ytd-thumbnail-overlay-toggle-button-renderer',
-      MENU_3DOT_BTN: 'button[aria-label="Action menu"], ytd-menu-renderer yt-icon-button, button.yt-icon-button[aria-label="Action menu"]',
-      MENU_SERVICE_ITEM: 'ytd-menu-service-item-renderer',
+      MENU_3DOT_BTN: 'button[aria-label="Action menu"], button[aria-label*="Action" i], button[aria-label*="More actions" i], ytd-menu-renderer yt-icon-button, button.yt-icon-button[aria-label="Action menu"], .ytLockupMetadataViewModelMenuButton button',
+      MENU_SERVICE_ITEM: 'ytd-menu-service-item-renderer, yt-menu-service-item-view-model, yt-list-item-view-model',
       MENU_POPUP_CONTAINER: 'ytd-popup-container, ytd-menu-popup-renderer, tp-yt-iron-dropdown',
-      FEED_CARDS_ALL: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer',
-      CARD_THUMBNAIL_CONTAINER: '#thumbnail, ytd-thumbnail, .ytd-thumbnail'
+      FEED_CARDS_ALL: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-rich-grid-media',
+      CARD_THUMBNAIL_CONTAINER: '#thumbnail, ytd-thumbnail, .ytd-thumbnail, yt-thumbnail-view-model, .ytLockupViewModelContentImage, .ytThumbnailViewModelHost'
     },
     ATTRIBUTES: {
       VIDEO_ID: 'data-yqp-video-id'
@@ -436,7 +436,7 @@
       if (!card) return false;
 
       const isMenuBtn = DomHelpers.closest(target, SELECTORS.MENU_3DOT_BTN) ||
-        DomHelpers.closest(target, 'button[aria-label*="Action" i], button[aria-label*="More actions" i], yt-icon-button.ytd-menu-renderer, #menu yt-icon-button, ytd-menu-renderer button');
+        DomHelpers.closest(target, 'button[aria-label*="Action" i], button[aria-label*="More actions" i], yt-icon-button.ytd-menu-renderer, #menu yt-icon-button, ytd-menu-renderer button, .ytLockupMetadataViewModelMenuButton button, .ytLockupMetadataViewModelMenuButton');
 
       if (isMenuBtn) {
         const videoId = this._getVideoIdFromCard(card);
@@ -466,7 +466,8 @@
       }
 
       // 1. Overlay toggle button renderer
-      const toggleRenderer = DomHelpers.closest(target, SELECTORS.OVERLAY_ADD_TO_QUEUE_BTN || 'ytd-thumbnail-overlay-toggle-button-renderer');
+      const toggleRenderer = DomHelpers.closest(target, SELECTORS.OVERLAY_ADD_TO_QUEUE_BTN || 'ytd-thumbnail-overlay-toggle-button-renderer') ||
+        DomHelpers.closest(target, 'yt-thumbnail-overlay-toggle-button-view-model');
       if (toggleRenderer) {
         // Negative check: Watch later button or removal actions
         if (this._isWatchLater(toggleRenderer) || this._isWatchLater(target) ||
@@ -490,9 +491,9 @@
       }
 
       // 2. Generic button with queue aria-label inside thumbnail container
-      const thumb = DomHelpers.closest(target, SELECTORS.CARD_THUMBNAIL_CONTAINER || '#thumbnail, ytd-thumbnail, .ytd-thumbnail');
+      const thumb = DomHelpers.closest(target, SELECTORS.CARD_THUMBNAIL_CONTAINER || '#thumbnail, ytd-thumbnail, .ytd-thumbnail, yt-thumbnail-view-model, .ytLockupViewModelContentImage, .ytThumbnailViewModelHost');
       if (thumb) {
-        const queueBtn = DomHelpers.closest(target, 'button[aria-label*="queue" i], yt-icon-button[aria-label*="queue" i], [data-action="add-to-queue"]');
+        const queueBtn = DomHelpers.closest(target, 'button[aria-label*="queue" i], yt-icon-button[aria-label*="queue" i], [data-action="add-to-queue"], button[aria-label*="cola" i], button[aria-label*="file" i], button[aria-label*="fila" i], button[aria-label*="warteschlange" i]');
         if (queueBtn && !this._isWatchLater(queueBtn) && !this._isNegativeAction(queueBtn)) return true;
 
         const labeled = DomHelpers.closest(target, '[aria-label]');
@@ -517,8 +518,8 @@
      * @private
      */
     _isDropdownQueueItem(target) {
-      const menuItem = DomHelpers.closest(target, SELECTORS.MENU_SERVICE_ITEM || 'ytd-menu-service-item-renderer') ||
-        DomHelpers.closest(target, 'tp-yt-paper-item, ytd-menu-navigation-item-renderer, [role="menuitem"]');
+      const menuItem = DomHelpers.closest(target, SELECTORS.MENU_SERVICE_ITEM || 'ytd-menu-service-item-renderer, yt-menu-service-item-view-model, yt-list-item-view-model') ||
+        DomHelpers.closest(target, 'tp-yt-paper-item, ytd-menu-navigation-item-renderer, yt-menu-service-item-view-model, yt-list-item-view-model, [role="menuitem"]');
 
       if (!menuItem) return false;
 
@@ -637,7 +638,7 @@
     _findParentCard(el) {
       if (!el) return null;
       return DomHelpers.closest(el, SELECTORS.FEED_CARDS_ALL) ||
-        DomHelpers.closest(el, 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer');
+        DomHelpers.closest(el, 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, yt-lockup-view-model, ytd-rich-grid-media, .ytLockupViewModelHost');
     }
 
     /**
@@ -650,13 +651,31 @@
       if (!card) return null;
 
       // 1. Check child anchor href first (recycled element resilience)
-      const anchor = card.querySelector?.('a#thumbnail[href], a#video-title-link[href], a#video-title[href], a[href*="watch?v="], a[href*="v="]');
+      const anchor = card.querySelector?.('a#thumbnail[href], a#video-title-link[href], a#video-title[href], a.ytLockupViewModelContentImage[href], a.ytLockupViewModelTitle[href], a[href*="/watch?v="], a[href*="v="]');
       if (anchor && typeof anchor.getAttribute === 'function') {
         const href = anchor.getAttribute('href');
         const extracted = UrlParser.extractVideoId ? UrlParser.extractVideoId(href) : null;
         if (extracted && UrlParser.isValidVideoId(extracted)) {
           return extracted;
         }
+      }
+
+      // 1b. Check if card itself has an href
+      if (typeof card.getAttribute === 'function') {
+        const selfHref = card.getAttribute('href');
+        if (selfHref) {
+          const selfExtracted = UrlParser.extractVideoId ? UrlParser.extractVideoId(selfHref) : null;
+          if (selfExtracted && UrlParser.isValidVideoId(selfExtracted)) {
+            return selfExtracted;
+          }
+        }
+      }
+
+      // 1c. Check content-id in className (common in yt-lockup-view-model)
+      const classStr = card.className || '';
+      const contentIdMatch = typeof classStr === 'string' && classStr.match(/content-id-([a-zA-Z0-9_-]{11})/);
+      if (contentIdMatch && UrlParser.isValidVideoId(contentIdMatch[1])) {
+        return contentIdMatch[1];
       }
 
       // 2. Check cached attribute
@@ -689,10 +708,14 @@
       const text = (el.textContent || '').trim().toLowerCase();
       const aria = (el.getAttribute?.('aria-label') || '').trim().toLowerCase();
       const title = (el.getAttribute?.('title') || '').trim().toLowerCase();
+      const tooltip = (el.querySelector?.('#tooltip')?.textContent || '').trim().toLowerCase();
+      const childAria = (el.querySelector?.('[aria-label]')?.getAttribute?.('aria-label') || '').trim().toLowerCase();
 
       return this._containsQueueKeyword(text) ||
              this._containsQueueKeyword(aria) ||
-             this._containsQueueKeyword(title);
+             this._containsQueueKeyword(title) ||
+             this._containsQueueKeyword(tooltip) ||
+             this._containsQueueKeyword(childAria);
     }
 
     _containsQueueKeyword(str) {

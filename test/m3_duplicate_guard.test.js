@@ -530,6 +530,55 @@ function createMockFeedCard(videoId, options = {}) {
   return { card, overlayBtn, innerBtn, icon, menuBtn, menuIconBtn, titleLink };
 }
 
+function createMockLockupCard(videoId, options = {}) {
+  const card = document.createElement('yt-lockup-view-model');
+  card.className = 'lockup ytLockupViewModelWrapper';
+
+  // Thumbnail container
+  const thumbVm = document.createElement('yt-thumbnail-view-model');
+  thumbVm.className = 'ytThumbnailViewModelHost';
+
+  const imgLink = document.createElement('a');
+  imgLink.className = 'ytLockupViewModelContentImage';
+  if (videoId) {
+    imgLink.setAttribute('href', `/watch?v=${videoId}`);
+  }
+
+  // Hover button inside thumbnail
+  const hoverBtn = document.createElement('button');
+  hoverBtn.className = 'ytSpecButtonShapeNextHost';
+  hoverBtn.setAttribute('aria-label', options.overlayAriaLabel || 'Add to queue');
+  const icon = document.createElement('yt-icon');
+  hoverBtn.appendChild(icon);
+  imgLink.appendChild(hoverBtn);
+  thumbVm.appendChild(imgLink);
+  card.appendChild(thumbVm);
+
+  // Metadata with 3-dot menu
+  const meta = document.createElement('div');
+  meta.className = 'ytLockupMetadataViewModelMetadata';
+
+  const titleLink = document.createElement('a');
+  titleLink.className = 'ytLockupViewModelTitle';
+  if (videoId) {
+    titleLink.setAttribute('href', `/watch?v=${videoId}`);
+  }
+  meta.appendChild(titleLink);
+
+  const menuContainer = document.createElement('div');
+  menuContainer.className = 'ytLockupMetadataViewModelMenuButton';
+  const menuBtn = document.createElement('button');
+  menuBtn.className = 'ytSpecButtonShapeNextHost';
+  menuBtn.setAttribute('aria-label', 'More actions');
+  menuContainer.appendChild(menuBtn);
+  meta.appendChild(menuContainer);
+
+  card.appendChild(meta);
+  document.body.appendChild(card);
+
+  return { card, hoverBtn, icon, menuBtn, titleLink };
+}
+
 function createMockDropdownMenu(options = {}) {
   const popup = document.createElement('ytd-popup-container');
   const menuPopup = document.createElement('ytd-menu-popup-renderer');
@@ -930,6 +979,34 @@ describe('Milestone M3: Duplicate Guard & Toast Notification Suite', () => {
 
       guard.destroy();
     });
+
+    test('3.5 Modern yt-lockup-view-model card hover queue button duplicate interception', () => {
+      const queuedId = 'JrlWxZCTomw';
+      const observer = new MockQueueObserver([queuedId]);
+      const toast = new ToastManager({ document });
+      const guard = new DuplicateGuard({
+        document,
+        queueObserver: observer,
+        toastManager: toast
+      });
+
+      const { hoverBtn } = createMockLockupCard(queuedId);
+
+      let ytHandlerExecuted = false;
+      hoverBtn.addEventListener('click', () => {
+        ytHandlerExecuted = true;
+      });
+
+      const evt = new MockEvent('click', { bubbles: true, cancelable: true });
+      hoverBtn.dispatchEvent(evt);
+
+      assert.equal(evt.defaultPrevented, true, 'Modern card duplicate click should be default-prevented');
+      assert.equal(evt._propagationStopped, true, 'Propagation should be stopped');
+      assert.equal(ytHandlerExecuted, false, 'YouTube click listener must NOT execute');
+      assert.equal(toast.getCurrentMessage(), 'Video is already in queue');
+
+      guard.destroy();
+    });
   });
 
   // ===========================================================================
@@ -1063,6 +1140,40 @@ describe('Milestone M3: Duplicate Guard & Toast Notification Suite', () => {
 
         assert.equal(evt.defaultPrevented, true, `Should intercept localized keyword: "${kw}"`);
       }
+
+      guard.destroy();
+    });
+
+    test('4.6 Modern yt-lockup-view-model 3-dot menu tracking and modern dropdown item interception', () => {
+      const queuedId = 'JrlWxZCTomw';
+      const observer = new MockQueueObserver([queuedId]);
+      const toast = new ToastManager({ document });
+      const guard = new DuplicateGuard({
+        document,
+        queueObserver: observer,
+        toastManager: toast
+      });
+
+      const { menuBtn } = createMockLockupCard(queuedId);
+
+      // Step 1: User clicks modern 3-dot "More actions" button on yt-lockup-view-model
+      menuBtn.dispatchEvent(new MockEvent('click', { bubbles: true }));
+      assert.equal(guard.getMenuState().videoId, queuedId);
+
+      // Step 2: User clicks modern dropdown item <yt-list-item-view-model>
+      const popup = document.createElement('ytd-popup-container');
+      const modernQueueItem = document.createElement('yt-list-item-view-model');
+      modernQueueItem.textContent = 'Add to queue';
+      popup.appendChild(modernQueueItem);
+      document.body.appendChild(popup);
+
+      const evt = new MockEvent('click', { bubbles: true, cancelable: true });
+      modernQueueItem.dispatchEvent(evt);
+
+      assert.equal(evt.defaultPrevented, true, 'Modern dropdown addition must be prevented');
+      assert.equal(evt._propagationStopped, true);
+      assert.equal(toast.getCurrentMessage(), 'Video is already in queue');
+      assert.equal(guard.getMenuState().videoId, null, 'Menu state should be cleared after interception');
 
       guard.destroy();
     });

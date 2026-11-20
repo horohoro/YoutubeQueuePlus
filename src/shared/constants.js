@@ -29,16 +29,17 @@
     FEED_ITEM_RICH: 'ytd-rich-item-renderer',
     FEED_ITEM_VIDEO: 'ytd-video-renderer',
     FEED_ITEM_COMPACT: 'ytd-compact-video-renderer',
-    FEED_CARDS_ALL: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer',
-    CARD_THUMBNAIL_CONTAINER: '#thumbnail, ytd-thumbnail, .ytd-thumbnail',
-    CARD_THUMBNAIL_LINK: 'a#thumbnail[href*="/watch?v="], a#video-title-link[href*="/watch?v="], a#thumbnail[href*="watch?v="]',
-    CARD_TITLE_LINK: 'a#video-title-link, a#video-title',
-    CARD_TITLE_TEXT: '#video-title',
+    FEED_ITEM_LOCKUP: 'yt-lockup-view-model',
+    FEED_CARDS_ALL: 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-rich-grid-media',
+    CARD_THUMBNAIL_CONTAINER: '#thumbnail, ytd-thumbnail, .ytd-thumbnail, yt-thumbnail-view-model, .ytLockupViewModelContentImage, .ytThumbnailViewModelHost',
+    CARD_THUMBNAIL_LINK: 'a#thumbnail[href*="/watch?v="], a#video-title-link[href*="/watch?v="], a#thumbnail[href*="watch?v="], a.ytLockupViewModelContentImage[href*="watch?v="], a.ytLockupViewModelContentImage[href*="v="]',
+    CARD_TITLE_LINK: 'a#video-title-link, a#video-title, a.ytLockupViewModelTitle',
+    CARD_TITLE_TEXT: '#video-title, .ytLockupMetadataViewModelTitle, h3.ytLockupMetadataViewModelHeadingReset',
 
     // Duplicate Guard Triggers (Hover button & 3-dot menu)
     OVERLAY_ADD_TO_QUEUE_BTN: 'ytd-thumbnail-overlay-toggle-button-renderer',
-    MENU_3DOT_BTN: 'button[aria-label="Action menu"], ytd-menu-renderer yt-icon-button, button.yt-icon-button[aria-label="Action menu"]',
-    MENU_SERVICE_ITEM: 'ytd-menu-service-item-renderer',
+    MENU_3DOT_BTN: 'button[aria-label="Action menu"], button[aria-label*="Action" i], button[aria-label*="More actions" i], ytd-menu-renderer yt-icon-button, button.yt-icon-button[aria-label="Action menu"], .ytLockupMetadataViewModelMenuButton button',
+    MENU_SERVICE_ITEM: 'ytd-menu-service-item-renderer, yt-menu-service-item-view-model, yt-list-item-view-model',
     MENU_POPUP_CONTAINER: 'ytd-popup-container, ytd-menu-popup-renderer, tp-yt-iron-dropdown',
 
     // Restore Banner Injection Targets
