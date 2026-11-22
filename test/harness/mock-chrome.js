@@ -209,7 +209,7 @@ class MockChrome {
     this.runtime = {
       id: 'youtube-queue-plus-test-extension-id',
       lastError: null,
-      getManifest: () => ({ version: '1.0.4', name: 'YoutubeQueuePlus' }),
+      getManifest: () => ({ version: '1.0.5', name: 'YoutubeQueuePlus' }),
       sendMessage: (message, callback) => {
         if (callback) callback({ status: 'ok' });
         return Promise.resolve({ status: 'ok' });
