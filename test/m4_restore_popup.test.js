@@ -1152,6 +1152,99 @@ describe('Milestone M4: Session Restore Controller & Popup UI', () => {
       controller.destroy();
     });
 
+    test('1.14: checkRestoreAvailable returns false when active page is /watch with queue or playlist parameter (list=TLPQ, list=TLGG, list=PL)', async () => {
+      const { doc } = createYouTubePageDOM();
+      const win = new MockWindow(doc);
+      win.location.pathname = '/watch';
+      win.location.search = '?v=3cjst_x7CyI&list=TLPQMjExMTIwMjYqV6AoY1VEDQ&index=13';
+      win.location.href = 'https://www.youtube.com/watch?v=3cjst_x7CyI&list=TLPQMjExMTIwMjYqV6AoY1VEDQ&index=13';
+
+      const mockStorage = new MockChromeStorageArea();
+      const storageSync = new StorageSync({ storageArea: mockStorage, debounceDelay: 0 });
+
+      await mockStorage.set({
+        [StorageKeys.STORAGE_KEYS.ACTIVE_QUEUE]: { videoIds: [], count: 0 },
+        [StorageKeys.STORAGE_KEYS.SAVED_SESSION]: {
+          videoIds: ['oldVid000001', 'oldVid000002'],
+          currentIndex: 0,
+          savedAt: Date.now() - 86400000
+        }
+      });
+
+      const controller = new RestoreController({
+        document: doc,
+        window: win,
+        storageSync,
+        autoStart: false
+      });
+
+      const available = await controller.checkRestoreAvailable();
+      assert.equal(available, false, 'Banner must not be shown when currently watching an ephemeral or active queue (list=TLPQ...)');
+      controller.destroy();
+    });
+
+    test('1.15: checkRestoreAvailable returns false when active page is /watch_videos endpoint with video_ids param', async () => {
+      const { doc } = createYouTubePageDOM();
+      const win = new MockWindow(doc);
+      win.location.pathname = '/watch_videos';
+      win.location.search = '?video_ids=dQw4w9WgXcQ,jNQXAC9IVRw&index=0';
+      win.location.href = 'https://www.youtube.com/watch_videos?video_ids=dQw4w9WgXcQ,jNQXAC9IVRw&index=0';
+
+      const mockStorage = new MockChromeStorageArea();
+      const storageSync = new StorageSync({ storageArea: mockStorage, debounceDelay: 0 });
+
+      await mockStorage.set({
+        [StorageKeys.STORAGE_KEYS.ACTIVE_QUEUE]: { videoIds: [], count: 0 },
+        [StorageKeys.STORAGE_KEYS.SAVED_SESSION]: {
+          videoIds: ['oldVid000001', 'oldVid000002'],
+          currentIndex: 0,
+          savedAt: Date.now() - 86400000
+        }
+      });
+
+      const controller = new RestoreController({
+        document: doc,
+        window: win,
+        storageSync,
+        autoStart: false
+      });
+
+      const available = await controller.checkRestoreAvailable();
+      assert.equal(available, false, 'Banner must not be shown on /watch_videos player endpoint');
+      controller.destroy();
+    });
+
+    test('1.16: checkRestoreAvailable returns true on /watch page for standalone video without list or queue params', async () => {
+      const { doc } = createYouTubePageDOM();
+      const win = new MockWindow(doc);
+      win.location.pathname = '/watch';
+      win.location.search = '?v=standalone01';
+      win.location.href = 'https://www.youtube.com/watch?v=standalone01';
+
+      const mockStorage = new MockChromeStorageArea();
+      const storageSync = new StorageSync({ storageArea: mockStorage, debounceDelay: 0 });
+
+      await mockStorage.set({
+        [StorageKeys.STORAGE_KEYS.ACTIVE_QUEUE]: { videoIds: [], count: 0 },
+        [StorageKeys.STORAGE_KEYS.SAVED_SESSION]: {
+          videoIds: ['dQw4w9WgXcQ', 'jNQXAC9IVRw'],
+          currentIndex: 0,
+          savedAt: Date.now() - 3600000
+        }
+      });
+
+      const controller = new RestoreController({
+        document: doc,
+        window: win,
+        storageSync,
+        autoStart: false
+      });
+
+      const available = await controller.checkRestoreAvailable();
+      assert.equal(available, true, 'Banner can be offered on standalone video watch page to resume saved queue');
+      controller.destroy();
+    });
+
   });
 
   // ---------------------------------------------------------------------------

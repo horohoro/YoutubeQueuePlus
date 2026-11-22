@@ -33,8 +33,8 @@
       MINIPLAYER_CONTAINER: 'ytd-miniplayer',
       MINIPLAYER_ACTIVE: 'ytd-miniplayer[active]',
       QUEUE_ITEMS_CONTAINER: 'ytd-playlist-panel-renderer #items, #items.ytd-playlist-panel-renderer',
-      QUEUE_ITEM: 'ytd-playlist-panel-video-renderer',
-      QUEUE_ITEM_SELECTED: 'ytd-playlist-panel-video-renderer[selected]',
+      QUEUE_ITEM: 'ytd-playlist-panel-video-renderer, yt-playlist-panel-video-view-model',
+      QUEUE_ITEM_SELECTED: 'ytd-playlist-panel-video-renderer[selected], yt-playlist-panel-video-view-model[selected]',
       QUEUE_ITEM_ENDPOINT: 'a#wc-endpoint, a#thumbnail',
       QUEUE_ITEM_TITLE: '#video-title'
     },
@@ -319,6 +319,18 @@
       return this.doc || (typeof document !== 'undefined' ? document : null);
     }
 
+    _isWatchPage() {
+      const loc = this.win?.location;
+      let pathname = loc?.pathname || '';
+      if (!pathname && loc?.href) {
+        try {
+          const u = new URL(loc.href, 'https://www.youtube.com');
+          pathname = u.pathname;
+        } catch (_) {}
+      }
+      return typeof pathname === 'string' && pathname.startsWith('/watch');
+    }
+
     /**
      * Resolves the active ytd-playlist-panel-renderer element.
      * Prioritizes watch page sidebar or active floating miniplayer.
@@ -329,8 +341,7 @@
       const doc = this._getDoc();
       if (!doc) return null;
 
-      const pathname = (this.win?.location?.pathname) || '';
-      const isWatchPage = typeof pathname === 'string' && pathname.startsWith('/watch');
+      const isWatchPage = this._isWatchPage();
 
       // 1. If on watch page, prioritize watch page sidebar panel
       if (isWatchPage) {
@@ -396,8 +407,9 @@
      */
     _hasQueueItems(panel) {
       if (!panel) return false;
+      const isWatchPage = this._isWatchPage();
       // Guard against hidden watch panel on home page or non-watch routes
-      if (panel.hasAttribute?.('hidden') || panel.style?.display === 'none' || panel.hidden === true) {
+      if (!isWatchPage && (panel.hasAttribute?.('hidden') || panel.style?.display === 'none' || panel.hidden === true)) {
         return false;
       }
       const itemsContainer = DomHelpers.safeQuery('#items', panel) || panel;

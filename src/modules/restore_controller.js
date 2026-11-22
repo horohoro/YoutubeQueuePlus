@@ -202,6 +202,24 @@
         return false;
       }
 
+      // Check if current page is already playing a queue or playlist
+      const loc = this.win?.location;
+      let pathname = loc?.pathname || '';
+      let search = loc?.search || '';
+      if (!pathname && loc?.href) {
+        try {
+          const u = new URL(loc.href, 'https://www.youtube.com');
+          pathname = u.pathname;
+          search = u.search;
+        } catch (_) {}
+      }
+      const isWatchRoute = typeof pathname === 'string' && (pathname.startsWith('/watch') || pathname.startsWith('/watch_videos'));
+      const hasQueueParam = typeof search === 'string' && (/[?&]list=/.test(search) || /[?&]video_ids=/.test(search));
+      const href = loc?.href || '';
+      if (isWatchRoute && (hasQueueParam || /[?&]list=/.test(href) || /[?&]video_ids=/.test(href))) {
+        return false;
+      }
+
       // 3. Saved session check
       const savedSession = await this._getSavedSession();
       if (!savedSession || !Array.isArray(savedSession.videoIds) || savedSession.videoIds.length === 0) {

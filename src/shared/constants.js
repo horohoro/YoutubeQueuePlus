@@ -20,8 +20,8 @@
     MINIPLAYER_CONTAINER: 'ytd-miniplayer',
     MINIPLAYER_ACTIVE: 'ytd-miniplayer[active]',
     QUEUE_ITEMS_CONTAINER: 'ytd-playlist-panel-renderer #items, #items.ytd-playlist-panel-renderer',
-    QUEUE_ITEM: 'ytd-playlist-panel-video-renderer',
-    QUEUE_ITEM_SELECTED: 'ytd-playlist-panel-video-renderer[selected]',
+    QUEUE_ITEM: 'ytd-playlist-panel-video-renderer, yt-playlist-panel-video-view-model',
+    QUEUE_ITEM_SELECTED: 'ytd-playlist-panel-video-renderer[selected], yt-playlist-panel-video-view-model[selected]',
     QUEUE_ITEM_ENDPOINT: 'a#wc-endpoint, a#thumbnail',
     QUEUE_ITEM_TITLE: '#video-title',
 

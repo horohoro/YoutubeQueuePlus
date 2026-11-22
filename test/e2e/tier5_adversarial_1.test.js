@@ -496,6 +496,57 @@ describe('Tier 5: Adversarial Coverage Hardening (Adversarial Suite 1)', () => {
 
       observer.destroy();
     });
+
+    test('3.4: Watch page queue panel with hidden or collapsed attribute (responsive/theater mode) is correctly recognized and active queue extracted', () => {
+      // User is on watch page playing a queue
+      win.location.pathname = '/watch';
+      win.location.href = 'https://www.youtube.com/watch?v=vidWatch001&list=TLPQMjExMTIwMjYqV6AoY1VEDQ&index=1';
+
+      // On watch page, YouTube collapses or hides the sidebar panel in theater/responsive mode
+      const { panel } = createMockPlaylistPanel(doc, ['vidWatch001', 'vidWatch002', 'vidWatch003'], 0);
+      panel.setAttribute('hidden', '');
+      panel.setAttribute('collapsed', '');
+      doc.body.appendChild(panel);
+
+      const observer = new QueueObserver({ document: doc, window: win, debounceMs: 0 });
+      observer.start();
+      observer.rescan(true);
+
+      // On /watch, hidden attribute does not prevent discovering active queue items!
+      assert.equal(observer.isQueueActive(), true, 'Active queue recognized on /watch even when panel has hidden attribute');
+      assert.deepEqual(observer.getActiveVideoIds(), ['vidWatch001', 'vidWatch002', 'vidWatch003']);
+      assert.equal(observer.count, 3);
+
+      observer.destroy();
+    });
+
+    test('3.5: QueueObserver recognizes and extracts queue items using yt-playlist-panel-video-view-model', () => {
+      win.location.pathname = '/watch';
+      win.location.href = 'https://www.youtube.com/watch?v=vmVid001111';
+
+      const panel = doc.createElement('ytd-playlist-panel-renderer');
+      const itemsContainer = doc.createElement('div');
+      itemsContainer.id = 'items';
+      panel.appendChild(itemsContainer);
+
+      const vmItem = doc.createElement('yt-playlist-panel-video-view-model');
+      vmItem.setAttribute('data-yqp-video-id', 'vmVid001111');
+      const endpoint = doc.createElement('a');
+      endpoint.id = 'wc-endpoint';
+      endpoint.href = '/watch?v=vmVid001111';
+      vmItem.appendChild(endpoint);
+      itemsContainer.appendChild(vmItem);
+      doc.body.appendChild(panel);
+
+      const observer = new QueueObserver({ document: doc, window: win, debounceMs: 0 });
+      observer.start();
+      observer.rescan(true);
+
+      assert.equal(observer.isQueueActive(), true);
+      assert.deepEqual(observer.getActiveVideoIds(), ['vmVid001111']);
+
+      observer.destroy();
+    });
   });
 
   // ===========================================================================
