@@ -547,6 +547,31 @@ describe('Tier 5: Adversarial Coverage Hardening (Adversarial Suite 1)', () => {
 
       observer.destroy();
     });
+
+    test('3.6: QueueObserver extracts items on home page when miniplayer is active and panel is collapsed/hidden', () => {
+      win.location.pathname = '/';
+      win.location.href = 'https://www.youtube.com/';
+
+      // Active miniplayer container in DOM
+      const miniplayer = doc.createElement('ytd-miniplayer');
+      miniplayer.setAttribute('active', '');
+      doc.body.appendChild(miniplayer);
+
+      // Collapsed queue panel (retained in DOM with hidden attribute)
+      const { panel } = createMockPlaylistPanel(doc, ['miniVid0001', 'miniVid0002'], 1);
+      panel.setAttribute('hidden', '');
+      doc.body.appendChild(panel);
+
+      const observer = new QueueObserver({ document: doc, window: win, debounceMs: 0 });
+      observer.start();
+      observer.rescan(true);
+
+      assert.equal(observer.isQueueActive(), true, 'Active queue recognized on home page when miniplayer is active');
+      assert.deepEqual(observer.getActiveVideoIds(), ['miniVid0001', 'miniVid0002']);
+      assert.equal(observer.getCurrentIndex(), 1);
+
+      observer.destroy();
+    });
   });
 
   // ===========================================================================

@@ -940,8 +940,15 @@ function createPopupDOM(docInstance) {
   restoreBtn.disabled = true;
   doc.body.appendChild(restoreBtn);
 
+  const versionTag = doc.createElement('span');
+  versionTag.id = 'versionTag';
+  versionTag.className = 'version-tag';
+  versionTag.textContent = 'v1.0';
+  doc.body.appendChild(versionTag);
+
   return {
     doc,
+    versionTag,
     queueCount,
     playingIndex,
     queueLivePill,

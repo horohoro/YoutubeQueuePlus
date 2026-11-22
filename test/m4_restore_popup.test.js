@@ -569,6 +569,9 @@ class MockChrome {
         }
       }
     };
+    this.runtime = {
+      getManifest: () => ({ version: '1.0.4', name: 'YoutubeQueuePlus' })
+    };
     this.tabs = {
       _tabs: [{ id: 101, url: 'https://www.youtube.com/' }],
       query: (queryInfo, callback) => {
@@ -682,8 +685,15 @@ function createPopupDOM() {
   restoreBtn.textContent = 'Restore Saved Queue';
   doc.body.appendChild(restoreBtn);
 
+  const versionTag = doc.createElement('span');
+  versionTag.id = 'versionTag';
+  versionTag.className = 'version-tag';
+  versionTag.textContent = 'v1.0';
+  doc.body.appendChild(versionTag);
+
   return {
     doc,
+    versionTag,
     queueCount,
     playingIndex,
     queueLivePill,
@@ -1515,6 +1525,7 @@ describe('Milestone M4: Session Restore Controller & Popup UI', () => {
       popup.init();
       await new Promise(r => setTimeout(r, 10));
 
+      assert.equal(dom.versionTag.textContent, 'v1.0.4', 'Dynamic version tag rendered from manifest');
       assert.equal(dom.queueCount.textContent, '3 videos');
       assert.equal(dom.playingIndex.textContent, 'Video 2 of 3');
       assert.equal(dom.queueLivePill.textContent, 'LIVE');

@@ -408,8 +408,9 @@
     _hasQueueItems(panel) {
       if (!panel) return false;
       const isWatchPage = this._isWatchPage();
-      // Guard against hidden watch panel on home page or non-watch routes
-      if (!isWatchPage && (panel.hasAttribute?.('hidden') || panel.style?.display === 'none' || panel.hidden === true)) {
+      const hasActiveMiniplayer = Boolean(DomHelpers.safeQuery(SELECTORS.MINIPLAYER_ACTIVE, this._getDoc()));
+      // Guard against hidden watch panel on home page or non-watch routes when no active miniplayer is playing
+      if (!isWatchPage && !hasActiveMiniplayer && (panel.hasAttribute?.('hidden') || panel.style?.display === 'none' || panel.hidden === true)) {
         return false;
       }
       const itemsContainer = DomHelpers.safeQuery('#items', panel) || panel;

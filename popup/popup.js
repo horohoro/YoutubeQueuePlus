@@ -93,9 +93,24 @@
       if (!this.doc || this._isInitialized) return;
       this._isInitialized = true;
 
+      this.renderVersion();
       this.bindDOMEvents();
       this.bindStorageEvents();
       this.loadInitialState();
+    }
+
+    /**
+     * Renders full extension version from manifest into header version-tag.
+     */
+    renderVersion() {
+      const versionEl = this.doc?.getElementById('versionTag') || this.doc?.querySelector('.version-tag');
+      if (!versionEl) return;
+      try {
+        const manifestVersion = this.chromeObj?.runtime?.getManifest?.()?.version;
+        if (manifestVersion) {
+          versionEl.textContent = `v${manifestVersion}`;
+        }
+      } catch (_) {}
     }
 
     bindDOMEvents() {
